@@ -6,6 +6,32 @@ import { useAuth } from '../../hooks/useAuth';
 import { pexelsService } from '../../services/api/pexels';
 import type { Photo } from '../../types';
 
+// localStorage key for liked photos
+const LIKED_PHOTOS_KEY = 'liked_photos';
+
+// Helper functions for localStorage operations
+const loadLikedPhotosFromStorage = (): Set<number> => {
+  try {
+    const stored = localStorage.getItem(LIKED_PHOTOS_KEY);
+    if (stored) {
+      const photoIds = JSON.parse(stored) as number[];
+      return new Set(photoIds);
+    }
+  } catch (error) {
+    console.error('Error loading liked photos from localStorage:', error);
+  }
+  return new Set();
+};
+
+const saveLikedPhotosToStorage = (likedPhotos: Set<number>): void => {
+  try {
+    const photoIds = Array.from(likedPhotos);
+    localStorage.setItem(LIKED_PHOTOS_KEY, JSON.stringify(photoIds));
+  } catch (error) {
+    console.error('Error saving liked photos to localStorage:', error);
+  }
+};
+
 export const Photos: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,14 +47,24 @@ export const Photos: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  // Load liked photos from localStorage on component mount
+  useEffect(() => {
+    const storedLikedPhotos = loadLikedPhotosFromStorage();
+    setLikedPhotos(storedLikedPhotos);
+  }, []);
+
   const toggleLike = (photoId: number) => {
-    setLikedPhotos((prev) => {
+    setLikedPhotos((prev: Set<number>) => {
       const newLiked = new Set(prev);
       if (newLiked.has(photoId)) {
         newLiked.delete(photoId);
       } else {
         newLiked.add(photoId);
       }
+      
+      // Save to localStorage immediately after state update
+      saveLikedPhotosToStorage(newLiked);
+      
       return newLiked;
     });
   };
