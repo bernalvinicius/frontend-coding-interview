@@ -6,7 +6,7 @@
 
 ## Why?
 
-This project is part of the selection process for [Clever](https://movewithclever.com/). It involves developing a frontend application to render photos from the Pexels API using ReactJS and TypeScript. The application has the following features:
+This project is part of the selection process for [Clever](https://clever-real-estate.breezy.hr/). It involves developing a frontend application to render photos from the Pexels API using ReactJS and TypeScript. The application has the following features:
 
 - Sign In Page
 - All Photos Page (Protected Route)
